@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<head>
+    <title>数据处理</title>
+</head>
+<body>
+    <form action="/test/process" method="post" enctype="multipart/form-data">
+        <label for="input-mode">请选择数据预测的模式:</label>
+        <select id="input-mode" name="input-mode">
+            <option value="forward">正向预测</option>
+            <option value="reverse">反向推理</option>
+        </select>
+        <br>
+        <label for="input-method">请选择输入数据的方式:</label>
+        <select id="input-method" name="input-method">
+            <option value="manual">手动输入</option>
+            <option value="excel">从Excel文件中读取</option>
+            <option value="csv">从csv文件中读取</option>
+        </select>
+        <div id="manual-input">
+            <label for="manual-data">请输入数据:</label><br>
+            <input type="text" id="manual-data" name="manual-data"><br>
+        </div>
+        <div id="excel-input" style="display: none;">
+            <label for="excel-data">请选择Excel文件:</label><br>
+            <input type="file" id="excel-data" name="excel-data" accept=".xls,.xlsx"><br>
+        </div>
+        <div id="csv-input" style="display: none;">
+            <label for="csv-data">请选择csv文件:</label><br>
+            <input type="file" id="csv-data" name="csv-data" accept=".csv"><br>
+        </div>
+        <input type="submit" value="提交">
+    </form>
+    {% if result %}
+        <h2>处理结果:</h2>
+        <p>{{ result }}</p>
+    {% endif %}
+    <script>
+        function switchInputMethod()
+        {
+            var inputMethod = document.getElementById("input-method").value;
+            var manualInput = document.getElementById("manual-input");
+            var excelInput = document.getElementById("excel-input");
+            var csvInput = document.getElementById("csv-input");
+            if (inputMethod == "manual") {
+                manualInput.style.display = "block";
+                excelInput.style.display = "none";
+                csvInput.style.display = "none";
+            }
+            else if (inputMethod == "excel") {
+                manualInput.style.display = "none";
+                excelInput.style.display = "block";
+                csvInput.style.display = "none";
+
+            }
+            else if (inputMethod == "csv") {
+                manualInput.style.display = "none";
+                excelInput.style.display = "none";
+                csvInput.style.display = "block";
+            }
+        }
+        document.getElementById("input-method").addEventListener("change", switchInputMethod);
+    </script>
+</body>
+</html>

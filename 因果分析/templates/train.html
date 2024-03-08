@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<head>
+    <title>训练数据</title>
+    <style>
+        #progress-bar-container {
+            width: 100%;
+            background-color: #ddd;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 30px;
+            background-color: #4CAF50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <form action="/train" method="post" enctype="multipart/form-data">
+        <label for="training-method">请选择输入数据的方式:</label>
+        <select id="training-method" name="training-method">
+            <option value="manual">手动输入</option>
+            <option value="excel">从Excel文件中读取</option>
+            <option value="csv">从csv文件中读取</option>
+        </select>
+        <div id="manual-training">
+            <label for="manual-data">请输入数据:</label><br>
+            <input type="text" id="manual-data" name="manual-data"><br>
+        </div>
+        <div id="excel-training" style="display: none;">
+            <label for="excel-data">请选择Excel文件:</label><br>
+            <input type="file" id="excel-data" name="excel-data" accept=".xls,.xlsx"><br>
+        </div>
+        <div id="csv-training" style="display: none;">
+            <label for="csv-data">请选择csv文件:</label><br>
+            <input type="file" id="csv-data" name="csv-data" accept=".csv"><br>
+        </div>
+        <input type="submit" value="开始训练">
+        <!-- 进度条容器 -->
+        <div id="progress-bar-container">
+            <div id="progress-bar">0%</div>
+        </div>
+        <div id="training-status"></div>
+    </form>
+    {% if training_result %}
+        <h2>训练结果:</h2>
+        <p>{{ training_result }}</p>
+    {% endif %}
+     <!-- 测试数据的按钮 -->
+    <button type="button" onclick="window.location.href='/test'">测试数据</button>
+    <script>
+        function switchTrainingMethod()
+        {
+            var trainingMethod = document.getElementById("training-method").value;
+            var manualTraining = document.getElementById("manual-training");
+            var excelTraining = document.getElementById("excel-training");
+            var csvTraining = document.getElementById("csv-training");
+            if (trainingMethod == "manual") {
+                manualTraining.style.display = "block";
+                excelTraining.style.display = "none";
+                csvTraining.style.display = "none";
+            }
+            if (trainingMethod == "excel") {
+                manualTraining.style.display = "none";
+                excelTraining.style.display = "block";
+                csvTraining.style.display = "none";
+            }
+            else if (trainingMethod == "csv") {
+                manualTraining.style.display = "none";
+                excelTraining.style.display = "none";
+                csvTraining.style.display = "block";
+            }
+        }
+        document.getElementById("training-method").addEventListener("change", switchTrainingMethod);
+        var totalSteps = 300;
+        function updateProgressBar(currentStep) {
+            var percentage = (currentStep / totalSteps) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-bar').textContent = Math.round(percentage) + '%';
+
+            // 如果训练完成，显示提示信息
+            if (currentStep >= totalSteps-1) {
+                document.getElementById('training-status').textContent = '训练结束';
+                // 可以添加额外的样式来突出显示状态
+                document.getElementById('training-status').style.color = 'green';
+                document.getElementById('training-status').style.fontWeight = 'bold';
+            }
+        }
+        // 定义一个函数来发送Ajax请求并获取current_step
+        function fetchCurrentStep() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/get-current-step', true); // 假设您的Flask应用有一个名为'/get-current-step'的路由
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    // 假设服务器返回的是纯文本形式的current_step
+                    var currentStep = parseInt(xhr.responseText, 10);
+                    // 在这里您可以调用更新进度条的函数，例如：
+                    updateProgressBar(currentStep);
+                } else {
+                    console.error('请求失败：' + xhr.status);
+                }
+            };
+            xhr.send();
+        }
+        setInterval(fetchCurrentStep, 1000);
+    </script>
+</body>
+</html>

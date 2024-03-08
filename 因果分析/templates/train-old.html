@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<head>
+    <title>训练数据</title>
+</head>
+<body>
+    <form action="/train" method="post" enctype="multipart/form-data">
+        <label for="training-method">请选择输入数据的方式:</label>
+        <select id="training-method" name="training-method">
+            <option value="manual">手动输入</option>
+            <option value="excel">从Excel文件中读取</option>
+            <option value="csv">从csv文件中读取</option>
+        </select>
+        <div id="manual-training">
+            <label for="manual-data">请输入数据:</label><br>
+            <input type="text" id="manual-data" name="manual-data"><br>
+        </div>
+        <div id="excel-training" style="display: none;">
+            <label for="excel-data">请选择Excel文件:</label><br>
+            <input type="file" id="excel-data" name="file-data" accept=".xls,.xlsx"><br>
+        </div>
+        <div id="csv-training" style="display: none;">
+            <label for="csv-data">请选择csv文件:</label><br>
+            <input type="file" id="csv-data" name="csv-data" accept=".csv"><br>
+        </div>
+        <input type="submit" value="开始训练">
+    </form>
+    {% if training_result %}
+        <h2>训练结果:</h2>
+        <p>{{ training_result }}</p>
+    {% endif %}
+     <!-- 测试数据的按钮 -->
+    <button type="button" onclick="window.location.href='/test'">测试数据</button>
+    <script>
+        function switchTrainingMethod()
+        {
+            var trainingMethod = document.getElementById("training-method").value;
+            var manualTraining = document.getElementById("manual-training");
+            var excelTraining = document.getElementById("excel-training");
+            var csvTraining = document.getElementById("csv-training");
+            if (trainingMethod == "manual") {
+                manualTraining.style.display = "block";
+                excelTraining.style.display = "none";
+                csvTraining.style.display = "none";
+            }
+            if (trainingMethod == "excel") {
+                manualTraining.style.display = "none";
+                excelTraining.style.display = "block";
+                csvTraining.style.display = "none";
+            }
+            else if (trainingMethod == "csv") {
+                manualTraining.style.display = "none";
+                excelTraining.style.display = "none";
+                csvTraining.style.display = "block";
+            }
+        }
+        document.getElementById("training-method").addEventListener("change", switchTrainingMethod);
+    </script>
+</body>
+</html>

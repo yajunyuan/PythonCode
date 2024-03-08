@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<head>
+    <title>数据处理</title>
+</head>
+<body>
+    <form action="/process" method="post" enctype="application/json">
+        <label for="data">请输入数据:</label><br>
+        <input type="text" id="data" name="data"><br>
+        <input type="submit" value="提交">
+    </form>
+    {% if result %}
+        <h2>处理结果:</h2>
+        <p>{{ result }}</p>
+    {% endif %}
+</body>
+</html>
